@@ -4,53 +4,59 @@
         "exercises": [
             {
                 "main": "giận cá chém ＿",
-                "options": [],
                 "bottom": [
                     "angry [at the] fish, slashing [the] chopping board",
                     "to take out one's anger on someone who was not at fault"
-                ]
+                ],
+                "answer": "thớt"
             },
             {
                 "main": "giận cá ＿ thớt",
                 "bottom": [
                     "angry [at the] fish, slashing [the] chopping board",
                     "to take out one's anger on someone who was not at fault"
-                ]
+                ],
+                "answer": "chém"
             },
             {
                 "main": "giận ＿ chém thớt",
                 "bottom": [
                     "angry [at the] fish, slashing [the] chopping board",
                     "to take out one's anger on someone who was not at fault"
-                ]
+                ],
+                "answer": "cá"
             },
             {
                 "main": "＿ cá chém thớt",
                 "bottom": [
                     "angry [at the] fish, slashing [the] chopping board",
                     "to take out one's anger on someone who was not at fault"
-                ]
+                ],
+                "answer": "giận"
             },
             {
                 "main": "giận cá ＿ ＿",
                 "bottom": [
                     "angry [at the] fish, slashing [the] chopping board",
                     "to take out one's anger on someone who was not at fault"
-                ]
+                ],
+                "reveal": "giận cá chém thớt"
             },
             {
                 "main": "giận ＿ ＿ ＿",
                 "bottom": [
                     "angry [at the] fish, slashing [the] chopping board",
                     "to take out one's anger on someone who was not at fault"
-                ]
+                ],
+                "reveal": "giận cá chém thớt"
             },
             {
                 "main": "＿ ＿ ＿ ＿",
                 "bottom": [
                     "angry [at the] fish, slashing [the] chopping board",
                     "to take out one's anger on someone who was not at fault"
-                ]
+                ],
+                "reveal": "giận cá chém thớt"
             }
         ]
     },
@@ -62,52 +68,57 @@
                 "main": "anh hùng mạt ＿",
                 "bottom": [
                     "a hero at the end of the road"
-                ]
+                ],
+                "answer": "lộ"
             },
-                        {
+            {
                 "top": "a gifted, ambitious person, hopelessly stuck",
                 "main": "anh hùng ＿ lộ",
                 "bottom": [
                     "a hero at the end of the road"
-                ]
+                ],
+                "answer": "mạt"
             },
-                        {
+            {
                 "top": "a gifted, ambitious person, hopelessly stuck",
                 "main": "anh ＿ mạt lộ",
                 "bottom": [
                     "a hero at the end of the road"
-                ]
+                ],
+                "answer": "hùng"
             },
-                        {
+            {
                 "top": "a gifted, ambitious person, hopelessly stuck",
                 "main": "＿ hùng mạt lộ",
                 "bottom": [
                     "a hero at the end of the road"
-                ]
+                ],
+                "answer": "anh"
             },
-                        {
+            {
                 "top": "a gifted, ambitious person, hopelessly stuck",
                 "main": "anh hùng ＿ ＿",
                 "bottom": [
                     "a hero at the end of the road"
-                ]
+                ],
+                "reveal": "anh hùng mạt lộ"
             },
-                        {
+            {
                 "top": "a gifted, ambitious person, hopelessly stuck",
                 "main": "anh ＿ ＿ ＿",
                 "bottom": [
                     "a hero at the end of the road"
-                ]
+                ],
+                "reveal": "anh hùng mạt lộ"
             },
-                        {
+            {
                 "top": "a gifted, ambitious person, hopelessly stuck",
                 "main": "＿ ＿ ＿ ＿",
                 "bottom": [
                     "a hero at the end of the road"
-                ]
+                ],
+                "reveal": "anh hùng mạt lộ"
             }
         ]
     }
 ]
-
-

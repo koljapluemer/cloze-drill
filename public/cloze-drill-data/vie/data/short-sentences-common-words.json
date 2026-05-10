@@ -1,0 +1,27 @@
+[
+    {
+        "ordered": false,
+        "exercises": [
+            {
+                "top": "There is no spoon",
+                "main": "＿ có thìa.",
+                "answer": "Không"
+            }
+        ]
+    },
+    {
+        "ordered": false,
+        "exercises": [
+            {
+                "top": "Who am I?",
+                "main": "＿ là ai?",
+                "answer": "Tôi"
+            },
+            {
+                "top": "I have a laptop.",
+                "main": "＿ có laptop.",
+                "answer": "Tôi"
+            }
+        ]
+    }
+]

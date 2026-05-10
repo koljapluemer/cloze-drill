@@ -1,0 +1,82 @@
+[
+    {
+        "top": "Better than nothing.",
+        "main": "Besser ＿ nichts.",
+        "answers": ["als", "wie"]
+    },
+    {
+        "top": "Do you work as an electrician?",
+        "main": "Arbeitest du ＿ Elektriker?",
+        "answers": ["als", "wie"]
+    },
+    {
+        "top": "He works as a paramedic.",
+        "main": "Er arbeitet ＿ Rettungssanitäter.",
+        "answers": ["als", "wie"]
+    },
+    {
+        "top": "What comes next?",
+        "main": "Was kommt ＿ nächstes?",
+        "answers": ["als", "wie"]
+    },
+    {
+        "top": "I went first.",
+        "main": "Ich ging ＿ erster.",
+        "answers": ["als", "wie"]
+    },
+    {
+        "top": "Five is less than eight.",
+        "main": "Fünf ist weniger ＿ acht.",
+        "answers": ["als", "wie"]
+    },
+    {
+        "top": "One is better than none.",
+        "main": "Eins ist besser ＿ keins.",
+        "answers": ["als", "wie"]
+    },
+    {
+        "top": "He is famous as a researcher.",
+        "main": "Er ist ＿ Forscher berühmt.",
+        "answers": ["als", "wie"]
+    },
+    {
+        "top": "How rude!",
+        "main": "＿ unhöflich!",
+        "answers": ["Wie", "Als"]
+    },
+    {
+        "top": "What time is it?",
+        "main": "＿ spät?",
+        "answers": ["Wie", "Als"]
+    },
+    {
+        "top": "What are your names?",
+        "main": "＿ heißt ihr?",
+        "answers": ["Wie", "Als"]
+    },
+    {
+        "top": "As you like.",
+        "main": "＿ du willst!",
+        "answers": ["Wie", "Als"]
+    },
+    {
+        "top": "It's like new.",
+        "main": "Es ist ＿ neu.",
+        "answers": ["wie", "als"]
+    },
+    {
+        "top": "Do it however you think.",
+        "main": "Mach, ＿ du denkst.",
+        "answers": ["wie", "als"]
+    },
+    {
+        "top": "This is like magic.",
+        "main": "Das ist ＿ Zauberei.",
+        "answers": ["wie", "als"]
+    },
+    {
+        "top": "I think like you.",
+        "main": "Ich denke ＿ du.",
+        "answers": ["wie", "als"]
+    }
+]
