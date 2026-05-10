@@ -1,0 +1,113 @@
+[
+    {
+        "ordered": true,
+        "exercises": [
+            {
+                "main": "giận cá chém ＿",
+                "options": [],
+                "bottom": [
+                    "angry [at the] fish, slashing [the] chopping board",
+                    "to take out one's anger on someone who was not at fault"
+                ]
+            },
+            {
+                "main": "giận cá ＿ thớt",
+                "bottom": [
+                    "angry [at the] fish, slashing [the] chopping board",
+                    "to take out one's anger on someone who was not at fault"
+                ]
+            },
+            {
+                "main": "giận ＿ chém thớt",
+                "bottom": [
+                    "angry [at the] fish, slashing [the] chopping board",
+                    "to take out one's anger on someone who was not at fault"
+                ]
+            },
+            {
+                "main": "＿ cá chém thớt",
+                "bottom": [
+                    "angry [at the] fish, slashing [the] chopping board",
+                    "to take out one's anger on someone who was not at fault"
+                ]
+            },
+            {
+                "main": "giận cá ＿ ＿",
+                "bottom": [
+                    "angry [at the] fish, slashing [the] chopping board",
+                    "to take out one's anger on someone who was not at fault"
+                ]
+            },
+            {
+                "main": "giận ＿ ＿ ＿",
+                "bottom": [
+                    "angry [at the] fish, slashing [the] chopping board",
+                    "to take out one's anger on someone who was not at fault"
+                ]
+            },
+            {
+                "main": "＿ ＿ ＿ ＿",
+                "bottom": [
+                    "angry [at the] fish, slashing [the] chopping board",
+                    "to take out one's anger on someone who was not at fault"
+                ]
+            }
+        ]
+    },
+    {
+        "ordered": true,
+        "exercises": [
+            {
+                "top": "a gifted, ambitious person, hopelessly stuck",
+                "main": "anh hùng mạt ＿",
+                "bottom": [
+                    "a hero at the end of the road"
+                ]
+            },
+                        {
+                "top": "a gifted, ambitious person, hopelessly stuck",
+                "main": "anh hùng ＿ lộ",
+                "bottom": [
+                    "a hero at the end of the road"
+                ]
+            },
+                        {
+                "top": "a gifted, ambitious person, hopelessly stuck",
+                "main": "anh ＿ mạt lộ",
+                "bottom": [
+                    "a hero at the end of the road"
+                ]
+            },
+                        {
+                "top": "a gifted, ambitious person, hopelessly stuck",
+                "main": "＿ hùng mạt lộ",
+                "bottom": [
+                    "a hero at the end of the road"
+                ]
+            },
+                        {
+                "top": "a gifted, ambitious person, hopelessly stuck",
+                "main": "anh hùng ＿ ＿",
+                "bottom": [
+                    "a hero at the end of the road"
+                ]
+            },
+                        {
+                "top": "a gifted, ambitious person, hopelessly stuck",
+                "main": "anh ＿ ＿ ＿",
+                "bottom": [
+                    "a hero at the end of the road"
+                ]
+            },
+                        {
+                "top": "a gifted, ambitious person, hopelessly stuck",
+                "main": "＿ ＿ ＿ ＿",
+                "bottom": [
+                    "a hero at the end of the road"
+                ]
+            }
+        ]
+    }
+]
+
+
