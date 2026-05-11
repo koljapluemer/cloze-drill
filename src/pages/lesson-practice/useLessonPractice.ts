@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 
+import type { ExerciseProgressRecord } from '@/db/types'
 import { listLessonProgress } from '@/entities/exercise-progress/api'
 import {
   buildProgressLookup,
@@ -10,7 +11,10 @@ import {
 } from '@/entities/exercise-progress/model'
 import { loadLesson } from '@/entities/lesson-data/api'
 import type { LessonData, LessonExercise } from '@/entities/lesson-data/model'
-import { reviewExercise } from '@/features/exercise-review/reviewExercise'
+import {
+  createExerciseProgress,
+  reviewExercise,
+} from '@/features/exercise-review/reviewExercise'
 import {
   loadSessionHotPool,
   saveSessionHotPool,
@@ -22,6 +26,11 @@ import {
 
 export function useLessonPractice(language: string, lesson: string) {
   const currentExercise = ref<LessonExercise | null>(null)
+  const currentExerciseIsNew = computed(() =>
+    currentExercise.value
+      ? !records.value.get(makeExerciseRecordKey(currentExercise.value))
+      : false,
+  )
   const errorMessage = ref('')
   const exerciseVersion = ref(0)
   const isLoading = ref(true)
@@ -75,16 +84,39 @@ export function useLessonPractice(language: string, lesson: string) {
         exercise: reviewedExercise,
         outcome,
       })
-      const nextLookup = new Map(records.value)
-
-      nextLookup.set(makeExerciseRecordKey(nextRecord), nextRecord)
-      records.value = nextLookup
-
       await wait(500)
+      finalizeRecord(nextRecord)
       pickNextExercise()
     } catch (error) {
       errorMessage.value =
         error instanceof Error ? error.message : 'Could not save this review.'
+    } finally {
+      isSaving.value = false
+    }
+  }
+
+  async function rememberExercise(): Promise<void> {
+    if (
+      !lessonData.value ||
+      !currentExercise.value ||
+      !currentExerciseIsNew.value ||
+      isSaving.value
+    ) {
+      return
+    }
+
+    isSaving.value = true
+
+    try {
+      const nextRecord = await createExerciseProgress({
+        exercise: currentExercise.value,
+      })
+      await wait(500)
+      finalizeRecord(nextRecord)
+      pickNextExercise()
+    } catch (error) {
+      errorMessage.value =
+        error instanceof Error ? error.message : 'Could not create this flashcard.'
     } finally {
       isSaving.value = false
     }
@@ -127,9 +159,17 @@ export function useLessonPractice(language: string, lesson: string) {
     exerciseVersion.value += 1
   }
 
+  function finalizeRecord(record: ExerciseProgressRecord): void {
+    const nextLookup = new Map(records.value)
+
+    nextLookup.set(makeExerciseRecordKey(record), record)
+    records.value = nextLookup
+  }
+
   return {
     complete,
     currentExercise,
+    currentExerciseIsNew,
     errorMessage,
     exerciseVersion,
     isLoading,
@@ -137,6 +177,7 @@ export function useLessonPractice(language: string, lesson: string) {
     lessonData,
     load,
     mode,
+    rememberExercise,
     startInfinitePractice,
     submitOutcome,
   }

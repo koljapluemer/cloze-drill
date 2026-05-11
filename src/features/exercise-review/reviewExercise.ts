@@ -25,19 +25,60 @@ export async function reviewExercise({
   const rating = outcome === 'correct' ? Rating.Good : Rating.Again
   const result = scheduler.next(card, now, rating)
 
-  const record: ExerciseProgressRecord = {
-    card: serializeCard(result.card),
-    dueAt: result.card.due.getTime(),
-    language: exercise.language,
+  const record = createProgressRecord({
+    card: result.card,
+    exercise,
     lastOutcome: outcome,
-    lesson: exercise.lesson,
-    main: exercise.main,
-    updatedAt: now.getTime(),
-  }
+    now,
+  })
 
   await saveExerciseProgress(record)
 
   return record
+}
+
+interface CreateExerciseProgressInput {
+  exercise: ExerciseIdentity
+  now?: Date
+}
+
+export async function createExerciseProgress({
+  exercise,
+  now = new Date(),
+}: CreateExerciseProgressInput): Promise<ExerciseProgressRecord> {
+  const card = createEmptyCard(now)
+  const record = createProgressRecord({
+    card,
+    exercise,
+    lastOutcome: 'created',
+    now,
+  })
+
+  await saveExerciseProgress(record)
+
+  return record
+}
+
+function createProgressRecord({
+  card,
+  exercise,
+  lastOutcome,
+  now,
+}: {
+  card: Card
+  exercise: ExerciseIdentity
+  lastOutcome: ExerciseProgressRecord['lastOutcome']
+  now: Date
+}): ExerciseProgressRecord {
+  return {
+    card: serializeCard(card),
+    dueAt: card.due.getTime(),
+    language: exercise.language,
+    lastOutcome,
+    lesson: exercise.lesson,
+    main: exercise.main,
+    updatedAt: now.getTime(),
+  }
 }
 
 function deserializeCard(card: SerializedCardState): Card {

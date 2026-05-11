@@ -17,7 +17,7 @@ export interface ExerciseProgressRecord {
   card: SerializedCardState
   dueAt: number
   language: string
-  lastOutcome: 'wrong' | 'correct'
+  lastOutcome: 'wrong' | 'correct' | 'created'
   lesson: string
   main: string
   updatedAt: number

@@ -17,6 +17,7 @@ const router = useRouter()
 const {
   complete,
   currentExercise,
+  currentExerciseIsNew,
   errorMessage,
   exerciseVersion,
   isLoading,
@@ -24,6 +25,7 @@ const {
   lessonData,
   load,
   mode,
+  rememberExercise,
   startInfinitePractice,
   submitOutcome,
 } = useLessonPractice(props.language, props.lesson)
@@ -87,7 +89,9 @@ function goBack(): void {
         :key="`${currentExercise.main}:${exerciseVersion}`"
         :busy="isSaving"
         :exercise="currentExercise"
+        :is-new-exercise="currentExerciseIsNew"
         @answered="submitOutcome"
+        @remembered="rememberExercise"
       />
     </Transition>
   </PageFrame>

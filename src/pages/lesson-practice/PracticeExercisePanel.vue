@@ -12,14 +12,17 @@ const props = withDefaults(
   defineProps<{
     busy?: boolean
     exercise: LessonExercise
+    isNewExercise?: boolean
   }>(),
   {
     busy: false,
+    isNewExercise: false,
   },
 )
 
 const emit = defineEmits<{
   answered: [ReviewOutcome]
+  remembered: []
 }>()
 
 const disabledChoices = ref<string[]>([])
@@ -28,12 +31,19 @@ const lastOutcome = ref<ReviewOutcome | null>(null)
 const shuffledChoices = ref<string[]>([])
 const wrongAttempted = ref(false)
 
+const isCreateOnlyNewExercise = computed(
+  () => props.isNewExercise && props.exercise.kind !== 'choice',
+)
+
 const revealedAnswer = computed(() => {
   if (props.exercise.kind === 'choice' && lastOutcome.value) {
     return props.exercise.answers[0]
   }
 
-  if (props.exercise.kind === 'answer' && hasRevealed.value) {
+  if (
+    props.exercise.kind === 'answer' &&
+    (hasRevealed.value || isCreateOnlyNewExercise.value)
+  ) {
     return props.exercise.answer
   }
 
@@ -41,7 +51,10 @@ const revealedAnswer = computed(() => {
 })
 
 const revealText = computed(() => {
-  if (props.exercise.kind === 'reveal' && hasRevealed.value) {
+  if (
+    props.exercise.kind === 'reveal' &&
+    (hasRevealed.value || isCreateOnlyNewExercise.value)
+  ) {
     return props.exercise.reveal
   }
 
@@ -50,6 +63,7 @@ const revealText = computed(() => {
 
 const showAnswerButtons = computed(
   () =>
+    !isCreateOnlyNewExercise.value &&
     hasRevealed.value &&
     lastOutcome.value === null &&
     (props.exercise.kind === 'answer' || props.exercise.kind === 'reveal'),
@@ -57,6 +71,10 @@ const showAnswerButtons = computed(
 
 const showChoiceButtons = computed(
   () => props.exercise.kind === 'choice' && lastOutcome.value === null,
+)
+
+const showRememberButton = computed(
+  () => isCreateOnlyNewExercise.value && lastOutcome.value === null,
 )
 
 watch(
@@ -113,6 +131,14 @@ function score(outcome: ReviewOutcome): void {
   emit('answered', outcome)
 }
 
+function remember(): void {
+  if (props.busy) {
+    return
+  }
+
+  emit('remembered')
+}
+
 function shuffleChoices(exercise: ChoiceExercise): string[] {
   const nextChoices = [...exercise.answers]
 
@@ -131,6 +157,13 @@ function shuffleChoices(exercise: ChoiceExercise): string[] {
 <template>
   <section class="card border border-base-300/70 bg-base-100 shadow-sm">
     <div class="card-body gap-8 sm:p-8">
+      <div
+        v-if="isNewExercise"
+        class="badge badge-sm border-none bg-warning/15 px-3 py-2 font-medium text-warning-content"
+      >
+        new exercise
+      </div>
+
       <ExercisePrompt
         :exercise="exercise"
         :reveal-text="revealText"
@@ -181,6 +214,21 @@ function shuffleChoices(exercise: ChoiceExercise): string[] {
             @click="score('correct')"
           >
             Correct
+          </button>
+        </div>
+
+        <div
+          v-else-if="showRememberButton"
+          key="remember-button"
+          class="flex"
+        >
+          <button
+            class="btn btn-neutral"
+            :disabled="busy"
+            type="button"
+            @click="remember"
+          >
+            I will remember
           </button>
         </div>
 
