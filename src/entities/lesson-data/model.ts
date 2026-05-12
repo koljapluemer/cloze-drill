@@ -5,16 +5,18 @@ export interface LanguageCatalogEntry {
 
 export interface LessonCatalogEntry {
   description?: string
-  language: string
+  nativeLanguage: string
   name: string
   slug: string
+  targetLanguage: string
 }
 
 interface LessonExerciseBase {
   bottom: string[]
-  language: string
   lesson: string
   main: string
+  nativeLanguage: string
+  targetLanguage: string
   top?: string
 }
 
@@ -61,7 +63,8 @@ export interface LessonData {
   description?: string
   exercises: LessonExercise[]
   groups: LessonExerciseGroup[]
-  language: string
   name: string
+  nativeLanguage: string
   slug: string
+  targetLanguage: string
 }

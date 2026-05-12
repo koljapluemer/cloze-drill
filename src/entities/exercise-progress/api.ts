@@ -2,20 +2,22 @@ import { appDb } from '@/db/app-db'
 import type { ExerciseProgressRecord } from '@/db/types'
 
 export async function getExerciseProgress(
-  language: string,
+  nativeLanguage: string,
+  targetLanguage: string,
   lesson: string,
   main: string,
 ): Promise<ExerciseProgressRecord | undefined> {
-  return appDb.progress.get([language, lesson, main])
+  return appDb.progress.get([nativeLanguage, targetLanguage, lesson, main])
 }
 
 export async function listLessonProgress(
-  language: string,
+  nativeLanguage: string,
+  targetLanguage: string,
   lesson: string,
 ): Promise<ExerciseProgressRecord[]> {
   return appDb.progress
-    .where('[language+lesson]')
-    .equals([language, lesson])
+    .where('[nativeLanguage+targetLanguage+lesson]')
+    .equals([nativeLanguage, targetLanguage, lesson])
     .toArray()
 }
 

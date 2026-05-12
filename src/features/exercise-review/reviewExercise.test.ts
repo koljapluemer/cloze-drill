@@ -12,14 +12,16 @@ describe('createExerciseProgress', () => {
     const now = new Date('2026-05-11T10:00:00.000Z')
     const record = await createExerciseProgress({
       exercise: {
-        language: 'vie',
         lesson: 'fun-idioms',
         main: 'giận cá chém ＿',
+        nativeLanguage: 'eng',
+        targetLanguage: 'vie',
       },
       now,
     })
 
-    expect(record.language).toBe('vie')
+    expect(record.nativeLanguage).toBe('eng')
+    expect(record.targetLanguage).toBe('vie')
     expect(record.lesson).toBe('fun-idioms')
     expect(record.main).toBe('giận cá chém ＿')
     expect(record.lastOutcome).toBe('created')

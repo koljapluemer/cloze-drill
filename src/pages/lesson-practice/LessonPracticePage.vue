@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { Sparkles } from 'lucide-vue-next'
-import { onMounted } from 'vue'
+import { toRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import PageFrame from '@/dumb/layout/PageFrame.vue'
+import AppPage from '@/app/AppPage.vue'
+import { usePreferredNativeLanguage } from '@/entities/native-language-preference/api'
 import PracticeCompleteState from '@/pages/lesson-practice/PracticeCompleteState.vue'
 import PracticeExercisePanel from '@/pages/lesson-practice/PracticeExercisePanel.vue'
 import { useLessonPractice } from '@/pages/lesson-practice/useLessonPractice'
 
 const props = defineProps<{
-  language: string
   lesson: string
+  targetLanguage: string
 }>()
 
 const router = useRouter()
+const preferredNativeLanguage = usePreferredNativeLanguage()
 const {
   complete,
   currentExercise,
@@ -28,23 +30,33 @@ const {
   rememberExercise,
   startInfinitePractice,
   submitOutcome,
-} = useLessonPractice(props.language, props.lesson)
+} = useLessonPractice(
+  preferredNativeLanguage,
+  toRef(props, 'targetLanguage'),
+  toRef(props, 'lesson'),
+)
 
-onMounted(load)
+watch(
+  [preferredNativeLanguage, toRef(props, 'targetLanguage'), toRef(props, 'lesson')],
+  () => {
+    void load()
+  },
+  { immediate: true },
+)
 
 function goBack(): void {
   void router.push({
     name: 'lesson-select',
     params: {
-      language: props.language,
+      targetLanguage: props.targetLanguage,
     },
   })
 }
 </script>
 
 <template>
-  <PageFrame
-    :back-to="{ name: 'lesson-select', params: { language } }"
+  <AppPage
+    :back-to="{ name: 'lesson-select', params: { targetLanguage } }"
     :subtitle="lessonData?.description ?? 'Practice one cloze at a time.'"
     :title="lessonData?.name ?? 'Practice'"
   >
@@ -94,5 +106,5 @@ function goBack(): void {
         @remembered="rememberExercise"
       />
     </Transition>
-  </PageFrame>
+  </AppPage>
 </template>

@@ -168,9 +168,10 @@ function isExerciseUnlocked(
     .every((main) => {
       const record = records.get(
         makeExerciseRecordKey({
-          language: lesson.language,
           lesson: lesson.slug,
           main,
+          nativeLanguage: lesson.nativeLanguage,
+          targetLanguage: lesson.targetLanguage,
         }),
       )
 

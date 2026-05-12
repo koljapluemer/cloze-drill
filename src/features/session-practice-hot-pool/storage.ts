@@ -1,22 +1,31 @@
 import type { HotPoolEntry } from '@/entities/exercise-progress/model'
 
-export function clearSessionHotPool(language: string, lesson: string): void {
+export function clearSessionHotPool(
+  nativeLanguage: string,
+  targetLanguage: string,
+  lesson: string,
+): void {
   if (typeof window === 'undefined') {
     return
   }
 
-  window.sessionStorage.removeItem(storageKey(language, lesson))
+  window.sessionStorage.removeItem(
+    storageKey(nativeLanguage, targetLanguage, lesson),
+  )
 }
 
 export function loadSessionHotPool(
-  language: string,
+  nativeLanguage: string,
+  targetLanguage: string,
   lesson: string,
 ): HotPoolEntry[] {
   if (typeof window === 'undefined') {
     return []
   }
 
-  const raw = window.sessionStorage.getItem(storageKey(language, lesson))
+  const raw = window.sessionStorage.getItem(
+    storageKey(nativeLanguage, targetLanguage, lesson),
+  )
 
   if (!raw) {
     return []
@@ -36,7 +45,8 @@ export function loadSessionHotPool(
 }
 
 export function saveSessionHotPool(
-  language: string,
+  nativeLanguage: string,
+  targetLanguage: string,
   lesson: string,
   hotPool: HotPoolEntry[],
 ): void {
@@ -50,7 +60,7 @@ export function saveSessionHotPool(
   }))
 
   window.sessionStorage.setItem(
-    storageKey(language, lesson),
+    storageKey(nativeLanguage, targetLanguage, lesson),
     JSON.stringify(plainHotPool),
   )
 }
@@ -69,6 +79,10 @@ function isHotPoolEntry(value: unknown): value is HotPoolEntry {
   )
 }
 
-function storageKey(language: string, lesson: string): string {
-  return `cloze-drill:hot-pool:${language}:${lesson}`
+function storageKey(
+  nativeLanguage: string,
+  targetLanguage: string,
+  lesson: string,
+): string {
+  return `cloze-drill:hot-pool:${nativeLanguage}:${targetLanguage}:${lesson}`
 }

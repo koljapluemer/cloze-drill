@@ -1,21 +1,22 @@
 <script setup lang="ts">
 import { BookOpen, Play } from 'lucide-vue-next'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import PageFrame from '@/dumb/layout/PageFrame.vue'
+import AppPage from '@/app/AppPage.vue'
 import { clearSessionHotPool } from '@/features/session-practice-hot-pool/storage'
 import {
-  loadLanguageIndex,
   loadLessonIndex,
+  loadTargetLanguageIndex,
 } from '@/entities/lesson-data/api'
 import type {
   LanguageCatalogEntry,
   LessonCatalogEntry,
 } from '@/entities/lesson-data/model'
+import { usePreferredNativeLanguage } from '@/entities/native-language-preference/api'
 
 const props = defineProps<{
-  language: string
+  targetLanguage: string
 }>()
 
 const router = useRouter()
@@ -24,20 +25,32 @@ const errorMessage = ref('')
 const isLoading = ref(true)
 const languageCatalog = ref<LanguageCatalogEntry[]>([])
 const lessons = ref<LessonCatalogEntry[]>([])
+const preferredNativeLanguage = usePreferredNativeLanguage()
 
 const languageName = computed(() => {
-  const match = languageCatalog.value.find((entry) => entry.code === props.language)
-  return match?.name ?? props.language.toUpperCase()
+  const match = languageCatalog.value.find(
+    (entry) => entry.code === props.targetLanguage,
+  )
+  return match?.name ?? props.targetLanguage.toUpperCase()
 })
 
 async function loadPage(): Promise<void> {
+  const nativeLanguage = preferredNativeLanguage.value
+
+  if (!nativeLanguage) {
+    lessons.value = []
+    languageCatalog.value = []
+    isLoading.value = false
+    return
+  }
+
   isLoading.value = true
   errorMessage.value = ''
 
   try {
     const [loadedLanguages, loadedLessons] = await Promise.all([
-      loadLanguageIndex(),
-      loadLessonIndex(props.language),
+      loadTargetLanguageIndex(nativeLanguage),
+      loadLessonIndex(nativeLanguage, props.targetLanguage),
     ])
 
     languageCatalog.value = loadedLanguages
@@ -51,23 +64,34 @@ async function loadPage(): Promise<void> {
 }
 
 async function startLesson(slug: string): Promise<void> {
-  clearSessionHotPool(props.language, slug)
+  const nativeLanguage = preferredNativeLanguage.value
+
+  if (!nativeLanguage) {
+    return
+  }
+
+  clearSessionHotPool(nativeLanguage, props.targetLanguage, slug)
   await router.push({
     name: 'lesson-practice',
     params: {
-      language: props.language,
+      targetLanguage: props.targetLanguage,
       lesson: slug,
     },
   })
 }
 
-onMounted(loadPage)
-watch(() => props.language, loadPage)
+watch(
+  [() => props.targetLanguage, preferredNativeLanguage],
+  () => {
+    void loadPage()
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
-  <PageFrame
-    :back-to="{ name: 'language-select' }"
+  <AppPage
+    :back-to="{ name: 'target-language-select' }"
     :subtitle="`Choose a ${languageName} lesson.`"
     :title="languageName"
   >
@@ -135,5 +159,5 @@ watch(() => props.language, loadPage)
         </article>
       </div>
     </Transition>
-  </PageFrame>
+  </AppPage>
 </template>

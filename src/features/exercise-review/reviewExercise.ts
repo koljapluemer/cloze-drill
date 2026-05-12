@@ -73,10 +73,11 @@ function createProgressRecord({
   return {
     card: serializeCard(card),
     dueAt: card.due.getTime(),
-    language: exercise.language,
     lastOutcome,
     lesson: exercise.lesson,
     main: exercise.main,
+    nativeLanguage: exercise.nativeLanguage,
+    targetLanguage: exercise.targetLanguage,
     updatedAt: now.getTime(),
   }
 }

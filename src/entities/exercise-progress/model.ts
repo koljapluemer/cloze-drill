@@ -1,9 +1,10 @@
 import type { ExerciseProgressRecord } from '@/db/types'
 
 export interface ExerciseIdentity {
-  language: string
   lesson: string
   main: string
+  nativeLanguage: string
+  targetLanguage: string
 }
 
 export interface HotPoolEntry {
@@ -50,5 +51,10 @@ export function isSeenAndNotDue(
 }
 
 export function makeExerciseRecordKey(identity: ExerciseIdentity): string {
-  return `${identity.language}::${identity.lesson}::${identity.main}`
+  return [
+    identity.nativeLanguage,
+    identity.targetLanguage,
+    identity.lesson,
+    identity.main,
+  ].join('::')
 }

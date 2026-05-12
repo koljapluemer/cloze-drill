@@ -1,31 +1,46 @@
 <script setup lang="ts">
 import { Languages } from 'lucide-vue-next'
-import { onMounted, ref } from 'vue'
+import { ref, watch } from 'vue'
 
-import PageFrame from '@/dumb/layout/PageFrame.vue'
+import AppPage from '@/app/AppPage.vue'
 import {
-  loadLanguageIndex,
+  loadTargetLanguageIndex,
 } from '@/entities/lesson-data/api'
 import type { LanguageCatalogEntry } from '@/entities/lesson-data/model'
+import { usePreferredNativeLanguage } from '@/entities/native-language-preference/api'
 
 const errorMessage = ref('')
 const isLoading = ref(true)
 const languages = ref<LanguageCatalogEntry[]>([])
+const preferredNativeLanguage = usePreferredNativeLanguage()
 
-onMounted(async () => {
-  try {
-    languages.value = await loadLanguageIndex()
-  } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : 'Could not load languages.'
-  } finally {
-    isLoading.value = false
-  }
-})
+watch(
+  preferredNativeLanguage,
+  async (nativeLanguage) => {
+    if (!nativeLanguage) {
+      languages.value = []
+      isLoading.value = false
+      return
+    }
+
+    isLoading.value = true
+    errorMessage.value = ''
+
+    try {
+      languages.value = await loadTargetLanguageIndex(nativeLanguage)
+    } catch (error) {
+      errorMessage.value =
+        error instanceof Error ? error.message : 'Could not load languages.'
+    } finally {
+      isLoading.value = false
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
-  <PageFrame
+  <AppPage
     subtitle="Pick a language and start drilling sentence clozes."
     title="Cloze Drill"
   >
@@ -58,7 +73,7 @@ onMounted(async () => {
         <RouterLink
           v-for="language in languages"
           :key="language.code"
-          :to="{ name: 'lesson-select', params: { language: language.code } }"
+          :to="{ name: 'lesson-select', params: { targetLanguage: language.code } }"
           class="card border border-base-300/70 bg-base-100 shadow-sm hover:-translate-y-0.5 hover:shadow-md"
         >
           <div class="card-body gap-4">
@@ -81,5 +96,5 @@ onMounted(async () => {
         </RouterLink>
       </div>
     </Transition>
-  </PageFrame>
+  </AppPage>
 </template>

@@ -24,8 +24,21 @@ type RawExerciseGroup = {
 
 const jsonCache = new Map<string, Promise<unknown>>()
 
-export async function loadLanguageIndex(): Promise<LanguageCatalogEntry[]> {
-  const raw = await fetchJson<RawCatalog>('/cloze-drill-data/index.json')
+export async function loadNativeLanguageIndex(): Promise<LanguageCatalogEntry[]> {
+  const raw = await fetchJson<RawCatalog>('/cloze-drill-data/out/native_languages.json')
+
+  return Object.entries(raw).map(([code, value]) => ({
+    code,
+    name: value.name,
+  }))
+}
+
+export async function loadTargetLanguageIndex(
+  nativeLanguage: string,
+): Promise<LanguageCatalogEntry[]> {
+  const raw = await fetchJson<RawCatalog>(
+    `/cloze-drill-data/out/${nativeLanguage}/target_languages.json`,
+  )
 
   return Object.entries(raw).map(([code, value]) => ({
     code,
@@ -34,34 +47,41 @@ export async function loadLanguageIndex(): Promise<LanguageCatalogEntry[]> {
 }
 
 export async function loadLessonIndex(
-  language: string,
+  nativeLanguage: string,
+  targetLanguage: string,
 ): Promise<LessonCatalogEntry[]> {
-  const raw = await fetchJson<RawCatalog>(`/cloze-drill-data/${language}/index.json`)
+  const raw = await fetchJson<RawCatalog>(
+    `/cloze-drill-data/out/${nativeLanguage}/${targetLanguage}/index.json`,
+  )
 
   return Object.entries(raw).map(([slug, value]) => ({
     description: value.description,
-    language,
+    nativeLanguage,
     name: value.name,
     slug,
+    targetLanguage,
   }))
 }
 
 export async function loadLesson(
-  language: string,
+  nativeLanguage: string,
+  targetLanguage: string,
   slug: string,
 ): Promise<LessonData> {
   const [catalog, rawLesson] = await Promise.all([
-    loadLessonIndex(language),
-    fetchJson<unknown>(`/cloze-drill-data/${language}/data/${slug}.json`),
+    loadLessonIndex(nativeLanguage, targetLanguage),
+    fetchJson<unknown>(
+      `/cloze-drill-data/out/${nativeLanguage}/${targetLanguage}/data/${slug}.json`,
+    ),
   ])
 
   const lessonMeta = catalog.find((entry) => entry.slug === slug)
 
   if (!lessonMeta) {
-    throw new Error(`Unknown lesson: ${language}/${slug}`)
+    throw new Error(`Unknown lesson: ${nativeLanguage}/${targetLanguage}/${slug}`)
   }
 
-  return normalizeLesson(language, lessonMeta, rawLesson)
+  return normalizeLesson(nativeLanguage, targetLanguage, lessonMeta, rawLesson)
 }
 
 async function fetchJson<T>(path: string): Promise<T> {
@@ -111,7 +131,8 @@ function normalizeBottom(value: unknown): string[] {
 }
 
 function normalizeExercise(
-  language: string,
+  nativeLanguage: string,
+  targetLanguage: string,
   lesson: string,
   raw: unknown,
   container: LessonExercise['container'],
@@ -143,9 +164,10 @@ function normalizeExercise(
       bottom,
       container,
       kind: 'choice',
-      language,
       lesson,
       main: raw.main,
+      nativeLanguage,
+      targetLanguage,
       top,
     }
   }
@@ -156,9 +178,10 @@ function normalizeExercise(
       bottom,
       container,
       kind: 'answer',
-      language,
       lesson,
       main: raw.main,
+      nativeLanguage,
+      targetLanguage,
       top,
     }
   }
@@ -167,16 +190,18 @@ function normalizeExercise(
     bottom,
     container,
     kind: 'reveal',
-    language,
     lesson,
     main: raw.main,
+    nativeLanguage,
     reveal: raw.reveal as string,
+    targetLanguage,
     top,
   }
 }
 
 function normalizeLesson(
-  language: string,
+  nativeLanguage: string,
+  targetLanguage: string,
   lessonMeta: LessonCatalogEntry,
   rawLesson: unknown,
 ): LessonData {
@@ -189,7 +214,7 @@ function normalizeLesson(
     ? rawLesson.flatMap((group, groupIndex) => {
         const groupId = `${lessonMeta.slug}:${groupIndex}`
         const groupExercises = group.exercises.map((exercise, exerciseIndex) =>
-          normalizeExercise(language, lessonMeta.slug, exercise, {
+          normalizeExercise(nativeLanguage, targetLanguage, lessonMeta.slug, exercise, {
             groupId,
             index: exerciseIndex,
             kind: 'group',
@@ -206,7 +231,7 @@ function normalizeLesson(
         return groupExercises
       })
     : rawLesson.map((exercise) =>
-        normalizeExercise(language, lessonMeta.slug, exercise, {
+        normalizeExercise(nativeLanguage, targetLanguage, lessonMeta.slug, exercise, {
           kind: 'flat',
         }),
       )
@@ -215,8 +240,9 @@ function normalizeLesson(
     description: lessonMeta.description,
     exercises,
     groups,
-    language,
     name: lessonMeta.name,
+    nativeLanguage,
     slug: lessonMeta.slug,
+    targetLanguage,
   }
 }

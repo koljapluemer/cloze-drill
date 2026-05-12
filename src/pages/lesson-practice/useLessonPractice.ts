@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, type Ref, ref } from 'vue'
 
 import type { ExerciseProgressRecord } from '@/db/types'
 import { listLessonProgress } from '@/entities/exercise-progress/api'
@@ -24,7 +24,11 @@ import {
   selectLessonExercise,
 } from '@/meta/lesson-practice-select/selector'
 
-export function useLessonPractice(language: string, lesson: string) {
+export function useLessonPractice(
+  nativeLanguage: Readonly<Ref<string | null>>,
+  targetLanguage: Readonly<Ref<string>>,
+  lesson: Readonly<Ref<string>>,
+) {
   const currentExercise = ref<LessonExercise | null>(null)
   const currentExerciseIsNew = computed(() =>
     currentExercise.value
@@ -38,7 +42,7 @@ export function useLessonPractice(language: string, lesson: string) {
   const lessonData = ref<LessonData | null>(null)
   const mode = ref<PracticeMode>('normal')
   const records = ref<ProgressLookup>(new Map())
-  const sessionHotPool = ref(loadSessionHotPool(language, lesson))
+  const sessionHotPool = ref<ReturnType<typeof loadSessionHotPool>>([])
 
   const complete = computed(
     () =>
@@ -49,18 +53,32 @@ export function useLessonPractice(language: string, lesson: string) {
   )
 
   async function load(): Promise<void> {
+    const activeNativeLanguage = nativeLanguage.value
+
+    if (!activeNativeLanguage) {
+      currentExercise.value = null
+      errorMessage.value = 'Could not load this lesson.'
+      isLoading.value = false
+      lessonData.value = null
+      return
+    }
+
     isLoading.value = true
     errorMessage.value = ''
 
     try {
       const [loadedLesson, progress] = await Promise.all([
-        loadLesson(language, lesson),
-        listLessonProgress(language, lesson),
+        loadLesson(activeNativeLanguage, targetLanguage.value, lesson.value),
+        listLessonProgress(activeNativeLanguage, targetLanguage.value, lesson.value),
       ])
 
       lessonData.value = loadedLesson
       records.value = buildProgressLookup(progress)
-      sessionHotPool.value = loadSessionHotPool(language, lesson)
+      sessionHotPool.value = loadSessionHotPool(
+        activeNativeLanguage,
+        targetLanguage.value,
+        lesson.value,
+      )
       pickNextExercise()
     } catch (error) {
       errorMessage.value =
@@ -148,6 +166,12 @@ export function useLessonPractice(language: string, lesson: string) {
     }
 
     currentExercise.value = selection.exercise
+    const activeNativeLanguage = nativeLanguage.value
+
+    if (!activeNativeLanguage) {
+      return
+    }
+
     sessionHotPool.value = advanceHotPoolAfterShow({
       hotPool: sessionHotPool.value,
       lesson: lessonData.value,
@@ -155,7 +179,12 @@ export function useLessonPractice(language: string, lesson: string) {
       records: records.value,
       shownExercise: selection.exercise,
     })
-    saveSessionHotPool(language, lesson, sessionHotPool.value)
+    saveSessionHotPool(
+      activeNativeLanguage,
+      targetLanguage.value,
+      lesson.value,
+      sessionHotPool.value,
+    )
     exerciseVersion.value += 1
   }
 

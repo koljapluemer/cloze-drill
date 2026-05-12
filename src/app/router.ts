@@ -1,30 +1,55 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import LanguageSelectPage from '@/pages/language-select/LanguageSelectPage.vue'
+import {
+  createNativeLanguageRedirect,
+  nativeLanguageSelectRouteName,
+  requiresNativeLanguage,
+  targetLanguageSelectRouteName,
+} from '@/app/native-language-routing'
+import { getPreferredNativeLanguage } from '@/entities/native-language-preference/api'
 import LessonPracticePage from '@/pages/lesson-practice/LessonPracticePage.vue'
 import LessonSelectPage from '@/pages/lesson-select/LessonSelectPage.vue'
+import NativeLanguageSelectPage from '@/pages/native-language-select/NativeLanguageSelectPage.vue'
+import TargetLanguageSelectPage from '@/pages/target-language-select/TargetLanguageSelectPage.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/',
-      name: 'language-select',
-      component: LanguageSelectPage,
+      path: '/native-language',
+      name: nativeLanguageSelectRouteName,
+      component: NativeLanguageSelectPage,
     },
     {
-      path: '/:language',
+      path: '/',
+      name: targetLanguageSelectRouteName,
+      component: TargetLanguageSelectPage,
+    },
+    {
+      path: '/:targetLanguage',
       name: 'lesson-select',
       component: LessonSelectPage,
       props: true,
     },
     {
-      path: '/:language/:lesson/practice',
+      path: '/:targetLanguage/:lesson/practice',
       name: 'lesson-practice',
       component: LessonPracticePage,
       props: true,
     },
   ],
+})
+
+router.beforeEach((to) => {
+  if (!requiresNativeLanguage(to.name)) {
+    return true
+  }
+
+  if (getPreferredNativeLanguage()) {
+    return true
+  }
+
+  return createNativeLanguageRedirect(to.fullPath)
 })
 
 export default router
