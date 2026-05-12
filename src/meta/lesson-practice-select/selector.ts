@@ -11,6 +11,7 @@ import type { LessonData, LessonExercise } from '@/entities/lesson-data/model'
 
 export interface SelectLessonExerciseInput {
   hotPool: HotPoolEntry[]
+  lastShownExerciseKey: string | null
   lesson: LessonData
   mode: PracticeMode
   now: Date
@@ -28,7 +29,11 @@ export function advanceHotPoolAfterShow({
   now,
   records,
   shownExercise,
-}: Omit<SelectLessonExerciseInput, 'mode' | 'random'> & {
+}: {
+  hotPool: HotPoolEntry[]
+  lesson: LessonData
+  now: Date
+  records: ProgressLookup
   shownExercise: LessonExercise
 }): HotPoolEntry[] {
   const nextPool = hotPool
@@ -72,15 +77,20 @@ export function advanceHotPoolAfterShow({
 
 export function selectLessonExercise({
   hotPool,
+  lastShownExerciseKey,
   lesson,
   mode,
   now,
   random,
   records,
 }: SelectLessonExerciseInput): LessonSelectionResult {
-  const eligible = lesson.exercises.filter((exercise) =>
-    isExerciseUnlocked(lesson, exercise, records, now),
-  )
+  const eligible = lesson.exercises.filter((exercise) => {
+    if (makeExerciseRecordKey(exercise) === lastShownExerciseKey) {
+      return false
+    }
+
+    return isExerciseUnlocked(lesson, exercise, records, now)
+  })
 
   if (eligible.length === 0) {
     return { kind: 'complete' }

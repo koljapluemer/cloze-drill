@@ -40,6 +40,7 @@ export function useLessonPractice(
   const isLoading = ref(true)
   const isSaving = ref(false)
   const lessonData = ref<LessonData | null>(null)
+  const lastShownExerciseKey = ref<string | null>(null)
   const mode = ref<PracticeMode>('normal')
   const records = ref<ProgressLookup>(new Map())
   const sessionHotPool = ref<ReturnType<typeof loadSessionHotPool>>([])
@@ -65,6 +66,7 @@ export function useLessonPractice(
 
     isLoading.value = true
     errorMessage.value = ''
+    lastShownExerciseKey.value = null
 
     try {
       const [loadedLesson, progress] = await Promise.all([
@@ -153,6 +155,7 @@ export function useLessonPractice(
 
     const selection = selectLessonExercise({
       hotPool: sessionHotPool.value,
+      lastShownExerciseKey: lastShownExerciseKey.value,
       lesson: lessonData.value,
       mode: mode.value,
       now: new Date(),
@@ -166,6 +169,7 @@ export function useLessonPractice(
     }
 
     currentExercise.value = selection.exercise
+    lastShownExerciseKey.value = makeExerciseRecordKey(selection.exercise)
     const activeNativeLanguage = nativeLanguage.value
 
     if (!activeNativeLanguage) {

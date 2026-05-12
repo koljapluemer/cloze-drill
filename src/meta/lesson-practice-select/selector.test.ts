@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { ExerciseProgressRecord } from '@/db/types'
 import {
   buildProgressLookup,
+  makeExerciseRecordKey,
   type HotPoolEntry,
 } from '@/entities/exercise-progress/model'
 import type { LessonData, LessonExercise } from '@/entities/lesson-data/model'
@@ -81,6 +82,7 @@ describe('selectLessonExercise', () => {
 
     const pickedDue = selectLessonExercise({
       hotPool: [],
+      lastShownExerciseKey: null,
       lesson,
       mode: 'normal',
       now,
@@ -95,6 +97,7 @@ describe('selectLessonExercise', () => {
 
     const pickedFallback = selectLessonExercise({
       hotPool: [],
+      lastShownExerciseKey: null,
       lesson,
       mode: 'normal',
       now,
@@ -137,6 +140,7 @@ describe('selectLessonExercise', () => {
 
     const locked = selectLessonExercise({
       hotPool: [],
+      lastShownExerciseKey: null,
       lesson,
       mode: 'normal',
       now,
@@ -151,6 +155,7 @@ describe('selectLessonExercise', () => {
 
     const unlocked = selectLessonExercise({
       hotPool: [],
+      lastShownExerciseKey: null,
       lesson,
       mode: 'normal',
       now,
@@ -198,6 +203,7 @@ describe('selectLessonExercise', () => {
 
     const selection = selectLessonExercise({
       hotPool,
+      lastShownExerciseKey: null,
       lesson,
       mode: 'normal',
       now,
@@ -307,6 +313,7 @@ describe('selectLessonExercise', () => {
 
     const complete = selectLessonExercise({
       hotPool: [],
+      lastShownExerciseKey: null,
       lesson,
       mode: 'normal',
       now,
@@ -318,6 +325,7 @@ describe('selectLessonExercise', () => {
 
     const infinite = selectLessonExercise({
       hotPool: [],
+      lastShownExerciseKey: null,
       lesson,
       mode: 'infinite',
       now,
@@ -329,5 +337,116 @@ describe('selectLessonExercise', () => {
       exercise: { main: 'future two' },
       kind: 'exercise',
     })
+  })
+
+  it('never returns the same exercise twice in a row in normal mode', () => {
+    const lesson = createLesson([
+      {
+        answer: 'một',
+        bottom: [],
+        container: { kind: 'flat' },
+        kind: 'answer',
+        lesson: 'test-lesson',
+        main: 'first',
+        nativeLanguage: 'eng',
+        targetLanguage: 'vie',
+      },
+      {
+        answer: 'hai',
+        bottom: [],
+        container: { kind: 'flat' },
+        kind: 'answer',
+        lesson: 'test-lesson',
+        main: 'second',
+        nativeLanguage: 'eng',
+        targetLanguage: 'vie',
+      },
+    ])
+
+    const selection = selectLessonExercise({
+      hotPool: [],
+      lastShownExerciseKey: makeExerciseRecordKey(lesson.exercises[0]),
+      lesson,
+      mode: 'normal',
+      now,
+      random: () => 0,
+      records: buildProgressLookup([]),
+    })
+
+    expect(selection).toMatchObject({
+      exercise: { main: 'second' },
+      kind: 'exercise',
+    })
+  })
+
+  it('never returns the same exercise twice in a row in infinite mode', () => {
+    const lesson = createLesson([
+      {
+        answer: 'một',
+        bottom: [],
+        container: { kind: 'flat' },
+        kind: 'answer',
+        lesson: 'test-lesson',
+        main: 'future one',
+        nativeLanguage: 'eng',
+        targetLanguage: 'vie',
+      },
+      {
+        answer: 'hai',
+        bottom: [],
+        container: { kind: 'flat' },
+        kind: 'answer',
+        lesson: 'test-lesson',
+        main: 'future two',
+        nativeLanguage: 'eng',
+        targetLanguage: 'vie',
+      },
+    ])
+    const records = buildProgressLookup([
+      createRecord('future one', now.getTime() + 60_000),
+      createRecord('future two', now.getTime() + 120_000),
+    ])
+
+    const selection = selectLessonExercise({
+      hotPool: [],
+      lastShownExerciseKey: makeExerciseRecordKey(lesson.exercises[0]),
+      lesson,
+      mode: 'infinite',
+      now,
+      random: () => 0,
+      records,
+    })
+
+    expect(selection).toMatchObject({
+      exercise: { main: 'future two' },
+      kind: 'exercise',
+    })
+  })
+
+  it('returns complete when the only remaining candidate would repeat', () => {
+    const lesson = createLesson([
+      {
+        answer: 'một',
+        bottom: [],
+        container: { kind: 'flat' },
+        kind: 'answer',
+        lesson: 'test-lesson',
+        main: 'only exercise',
+        nativeLanguage: 'eng',
+        targetLanguage: 'vie',
+      },
+    ])
+
+    const selection = selectLessonExercise({
+      hotPool: [],
+      lastShownExerciseKey: makeExerciseRecordKey(lesson.exercises[0]),
+      lesson,
+      mode: 'infinite',
+      now,
+      random: () => 0,
+      records: buildProgressLookup([]),
+    })
+
+    expect(selection).toEqual({ kind: 'complete' })
   })
 })

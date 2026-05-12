@@ -1,0 +1,3 @@
+[submodule "public/cloze-drill-data"]
+	path = public/cloze-drill-data
+	url = git@github.com:koljapluemer/cloze-drill-data.git

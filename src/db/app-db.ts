@@ -10,11 +10,6 @@ class ClozeDrillDatabase extends Dexie {
 
     this.version(1).stores({
       progress:
-        '[language+lesson+main], [language+lesson], language, lesson, dueAt, updatedAt',
-    })
-
-    this.version(2).stores({
-      progress:
         '[nativeLanguage+targetLanguage+lesson+main], [nativeLanguage+targetLanguage+lesson], nativeLanguage, targetLanguage, lesson, dueAt, updatedAt',
     })
   }
