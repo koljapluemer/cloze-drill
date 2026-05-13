@@ -60,79 +60,35 @@ async function chooseNativeLanguage(code: string): Promise<void> {
 </script>
 
 <template>
-  <PageFrame
-    :back-to="selectedNativeLanguage ? { name: targetLanguageSelectRouteName } : undefined"
-    subtitle="Pick the language you already speak."
-    title="Set Native Language"
-  >
-    <Transition
-      name="route-fade"
-      appear
-    >
-      <div
-        v-if="isLoading"
-        class="skeleton h-44 rounded-box"
-      />
+  <PageFrame :back-to="selectedNativeLanguage ? { name: targetLanguageSelectRouteName } : undefined"
+    subtitle="Pick the language you already speak." title="Set Native Language">
+    <div v-if="isLoading" class="skeleton h-44 rounded-box" />
 
-      <div
-        v-else-if="errorMessage && languages.length === 0"
-        class="alert border border-error/20 bg-error/10 text-error"
-      >
-        {{ errorMessage }}
-      </div>
+    <div v-else-if="errorMessage && languages.length === 0" class="alert border border-error/20 bg-error/10 text-error">
+      {{ errorMessage }}
+    </div>
 
-      <section
-        v-else
-        class="card border border-base-300/70 bg-base-100 shadow-sm"
-      >
-        <div class="card-body gap-6 sm:p-8">
-          <div class="flex items-start gap-4">
-            <div class="rounded-full bg-warning/15 p-3 text-warning">
-              <Languages class="size-5" />
-            </div>
 
-            <div class="space-y-2">
-              <h2 class="text-2xl font-semibold tracking-tight text-base-content">
-                Choose once, change later
-              </h2>
-              <p class="text-sm leading-6 text-base-content/70">
-                This decides which lesson catalogs are available.
-              </p>
-            </div>
-          </div>
-
-          <div class="grid gap-3 sm:grid-cols-2">
-            <button
-              v-for="language in languages"
-              :key="language.code"
-              :class="[
-                'card w-full border text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md',
-                selectedNativeLanguage === language.code
-                  ? 'border-warning bg-warning/10'
-                  : 'border-base-300/70 bg-base-100',
-              ]"
-              type="button"
-              @click="chooseNativeLanguage(language.code)"
-            >
-              <div class="card-body gap-2 p-4">
-                <p class="text-xs font-medium uppercase tracking-[0.18em] text-base-content/45">
-                  {{ language.code }}
-                </p>
-                <p class="text-lg font-semibold tracking-tight text-base-content">
-                  {{ language.name }}
-                </p>
-              </div>
-            </button>
-          </div>
-
-          <p
-            v-if="errorMessage"
-            class="text-sm text-error"
-          >
-            {{ errorMessage }}
+    <div class="grid gap-3 sm:grid-cols-2">
+      <button v-for="language in languages" :key="language.code" :class="[
+        'card w-full border text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md',
+        selectedNativeLanguage === language.code
+          ? 'border-warning bg-warning/10'
+          : 'border-base-300/70 bg-base-100',
+      ]" type="button" @click="chooseNativeLanguage(language.code)">
+        <div class="card-body gap-2 p-4">
+          <p class="text-xs font-medium uppercase tracking-[0.18em] text-base-content/45">
+            {{ language.code }}
+          </p>
+          <p class="text-lg font-semibold tracking-tight text-base-content">
+            {{ language.name }}
           </p>
         </div>
-      </section>
-    </Transition>
+      </button>
+    </div>
+
+    <p v-if="errorMessage" class="text-sm text-error">
+      {{ errorMessage }}
+    </p>
   </PageFrame>
 </template>

@@ -41,8 +41,8 @@ watch(
 
 <template>
   <AppPage
-    subtitle="Pick a language and start drilling sentence clozes."
-    title="Cloze Drill"
+    subtitle="Which language do you want to practice?"
+    title="Target Language"
   >
     <Transition
       name="route-fade"
